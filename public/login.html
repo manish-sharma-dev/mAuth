@@ -54,7 +54,15 @@
                 throw new Error("Failed to login from the google")
             }
 
-            console.log("tiil now my request is going to the google api")
+            const body = await apiAuthResponse.json()
+            console.log("Received the response fron the google Auth",body)
+
+            const url_For_Redirecting_User_To_loginpage_of_Google = await body?.data
+
+            console.log("Authorization Url received",url_For_Redirecting_User_To_loginpage_of_Google)
+
+            window.open(url_For_Redirecting_User_To_loginpage_of_Google)
+            
         }
     </script>
 
