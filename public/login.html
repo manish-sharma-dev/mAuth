@@ -8,7 +8,7 @@
 <body>
     <style>
        .main-div{
-        padding: 10rem 33rem;
+        margin: 10rem 33rem;
         box-sizing: border-box;
        }
 
@@ -35,12 +35,28 @@
     <div class="main-div">
         <h1 class="heading">mAuth</h1>
         <div class="sec-div">
-            <p class="para">login with google</p>
+            <p class="para" onclick="loginwithGoogle()">login with google</p>
             <p class="para">Login with email</p>
         </div>
     </div>
 
-    <script></script>
+    <script>
+        const loginwithGoogle = async() => {
+            console.log("button Clicked")
+            const apiAuthResponse = await fetch('http://localhost:4000/auth/loginfromGoogle',{
+                method : 'GET',
+                headers : {
+                    'Content-type' : 'application/json'
+                }
+            })
+
+            if(!apiAuthResponse){
+                throw new Error("Failed to login from the google")
+            }
+
+            console.log("tiil now my request is going to the google api")
+        }
+    </script>
 
 </body>
 </html>
