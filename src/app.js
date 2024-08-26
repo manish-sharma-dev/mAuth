@@ -22,6 +22,17 @@ app.get('/',(req,res) => {
     res.sendFile(path.join(__dirname, '../public', 'login.html'));
 })
 
+app.get('/auth/callback',async(req,res) => {
+    // const response = await JSON.stringify(req.params)
+    // console.log("type of req and response",typeof(req),typeof(response))
+
+    const response = req
+    console.log(response?.query?.code)
+
+
+    res.sendFile(path.join(__dirname,'../public','login.html'))
+})
+
 // route for login success page
 app.get('/loginSuccess',(req,res) => {
     res.sendFile(path.join(__dirname,'../public','loginSuccess.html'))

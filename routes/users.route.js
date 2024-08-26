@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { AuthorisefromGoogleusingOauth } from '../controller/user.controller.js'
+import { AuthorisefromGoogleusingOauth, HandleCallbackFromTheGoogle } from '../controller/user.controller.js'
 
 const router = Router();
 
 router.route('/loginfromGoogle').get(AuthorisefromGoogleusingOauth)
+router.route('/callback').get(HandleCallbackFromTheGoogle)
 
 export { 
     router
