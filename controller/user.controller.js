@@ -5,6 +5,7 @@ import crypto from 'crypto'
 
 import path from "path";
 import { fileURLToPath } from 'url'; //to get the directory name in es module
+import { response } from "express";
 
 
 // Get the directory name of the current module file
@@ -12,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
+// request to get the Authorizational url form the google console api
 
 const AuthorisefromGoogleusingOauth = async(req,res) => {
     
@@ -40,7 +42,8 @@ const AuthorisefromGoogleusingOauth = async(req,res) => {
      access_type: 'offline',
      response_type : responseType,
      scope: scopes,
-     include_granted_scopes: true,
+     include_granted_scopes: false,
+     prompt : 'consent',
      // Include the state parameter to reduce the risk of CSRF attacks.
      state: state
     });
@@ -59,6 +62,7 @@ const AuthorisefromGoogleusingOauth = async(req,res) => {
    }
 }
 
+// request to get the access token from the google api console
 
 const HandleCallbackFromTheGoogle = async(req,res) => {
 
@@ -83,13 +87,50 @@ const HandleCallbackFromTheGoogle = async(req,res) => {
         }
 
         oauth2Client.setCredentials(token)
-        console.log('token received',token)
-        console.log("Access-token",token?.access_token)
-        console.log("Refresh-token",token?.refresh_token)
+        // console.log('token received',token)
+
+        const Accesstoken = token?.access_token
+        console.log("Access-token",Accesstoken)
+
+        // fetching the detail of the usr from the /get userinfo route of the googleapis
+
+        async function getUserDetail(){
+           try {
+             const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{
+                method : 'GET',
+                 headers : {
+                     'Content-Type': 'application/json',
+                     'Authorization' : `Bearer ${Accesstoken}`
+                 }
+             })
+
+             if(!response.ok){
+                throw new Apierror(404,"Reposnse is not Valid from the goole api")
+             }
+
+             const userInfo = await response.json()
+
+             if(!userInfo){
+                throw new Apierror(500,'Error in convertting to the json')
+             }
+
+
+             console.log("User detail response form the googleApi",userInfo)
+           } catch (error) {
+             console.log("An error OCuured while getting the response from the user",error)
+           }
+        }
+            
+
+        // calling the function for getting the user details
+        getUserDetail()
+
+
     })
 
     res.sendFile(path.join(__dirname,'../public','login.html'))
 }
+
 
 export { 
     AuthorisefromGoogleusingOauth,
