@@ -5,7 +5,7 @@ const ConnectDB = async() => {
     try {
         const dbname = process.env.DB_NAME
         console.log("db name pass successfullly")
-        const mongodbConnectionResponse = await mongoose.connect(`${process.env.MONGODB_URI}/${dbname}`)
+        const mongodbConnectionResponse = await mongoose.connect(`${process.env.MONGODB_URI}${dbname}`)
 
         if(!mongodbConnectionResponse){
             throw new Apierror(404,"Mongodb connection Occur")

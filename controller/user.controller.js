@@ -2,10 +2,10 @@ import { Apierror } from "../utils/Apierror.utils.js"
 import { Apiresponse } from "../utils/Apiresponse.util.js"
 import { google } from "googleapis";
 import crypto from 'crypto'
+import { User } from '../model/user.model.js'
 
 import path from "path";
 import { fileURLToPath } from 'url'; //to get the directory name in es module
-import { response } from "express";
 
 
 // Get the directory name of the current module file
@@ -113,9 +113,30 @@ const HandleCallbackFromTheGoogle = async(req,res) => {
              if(!userInfo){
                 throw new Apierror(500,'Error in convertting to the json')
              }
-
-
+             
              console.log("User detail response form the googleApi",userInfo)
+
+             // getting refresh token from the google api console
+             const refresh_token = token?.refresh_token
+
+             console.log("refresh token",refresh_token)
+
+             //Creating the user in my db
+             const user = await User.create({
+                name : userInfo?.given_name,
+                email : userInfo?.email,
+                googleId : userInfo?.sub,
+                refreshToken : refresh_token
+             })
+
+             const UserinfoIsPresentorNot = await User.findById(user?._id).select(" -password -refreshToken ")
+
+             if(!UserinfoIsPresentorNot){
+                throw new Apierror(404,"User not found in the Database maybe an issue occured while creating the user")
+             }
+             
+             console.log("A new User Created in my db",UserinfoIsPresentorNot)
+
            } catch (error) {
              console.log("An error OCuured while getting the response from the user",error)
            }
